@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespacce: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: cont1
+        image: nginx
+        ports:
+          - containerPort: 80
+        volumeMounts:
+          - name: vm
+            mountPath: /usr/share/nginx/html
+      - name: cont2
+        image: mysql
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: vm
+            mountPath: /mnt/mysql
+      volumes:
+        - name: vm
+          emptyDir: {}
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: web
+  type: NodePort
